@@ -125,12 +125,24 @@
             <button name="calculate" value="=">=</button>
         </div>
     </form>
-
+    
     <?php
-    if (isset($_POST['calculate'])) {
-        $expression = $_POST['display'];
-        $result = eval('return ' . $expression . ';');
-        echo '<script>document.getElementById("display").value = "' . $result . '";</script>';
+   
+    try {
+        if (isset($_POST['calculate'])) {
+            $expression = $_POST['display'];
+            
+            if (!preg_match('/^[0-9+\-*/. ]+$/', $expression)) {
+                throw new Exception('Invalid input');
+            }
+            if (strpos($expression, '/0') !== false) {
+                throw new Exception('Division by zero is not allowed.');
+            }
+            $result = eval('return ' . $expression . ';');
+            echo '<script>document.getElementById("display").value = "' . $result . '";</script>';
+        }
+    } catch (Exception $e) {
+        echo '<script>alert("' . $e->getMessage() . '");</script>';
     }
     ?>
 
